@@ -1,20 +1,36 @@
 "use client";
 import { getUsers } from "@/client/users";
-import { useQuery } from "@tanstack/react-query";
+import { createUser } from "@/server/users";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 interface User {
   id: number;
   name: string;
-  email: string;
 }
 
 export default function Home() {
   const todo = useQuery({ queryKey: ["todos"], queryFn: getUsers });
-  console.log(todo.data);
+  // console.log(todo.data);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: createUser,
+    onSuccess: () => {
+      // invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+    },
+  });
   return (
     <>
-      {todo.data?.map((cur: User) => {
-        return <div key={cur.id}>name: {cur.name}</div>;
+      <button onClick={() => mutation.mutate({ id: 1, name: "rupa" })}>
+        create user
+      </button>
+      {todo.data?.map((user: User) => {
+        return <div key={user.id}>name: {user.name}</div>;
       })}
     </>
   );
