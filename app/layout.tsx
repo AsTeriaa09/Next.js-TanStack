@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { TanstackProvider } from "@/components/providers/tanstack-provider";
+import TanstackProvider from "@/providers/tanstack-provider";
 
 export const metadata: Metadata = {
   title: "Next.js Tanstack",
