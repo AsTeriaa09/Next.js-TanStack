@@ -3,7 +3,7 @@ import axiosRequest from "@/lib/axiosRequest";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface User {
-  id: string;
+  _id: string;
   username: string;
   email: string;
   role: string;
@@ -15,6 +15,7 @@ interface AddUserBody {
   password: string;
   role: string;
 }
+
 
 export const useGetAllUser = () => {
   return useQuery<User[], Error>({
@@ -42,5 +43,23 @@ export const useAddUser = () => {
     onSuccess:()=>{
       queryClient.invalidateQueries(["allUsers"]);
     }
+  });
+};
+
+
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, string>({
+    mutationKey: ["deleteUser"],
+    mutationFn: async (_id: string) => {
+      await axiosRequest<void>({
+        url: `/delete-user/${_id}`,
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["allUsers"]); 
+    },
   });
 };
