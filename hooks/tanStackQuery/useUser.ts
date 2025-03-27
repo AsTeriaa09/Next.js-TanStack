@@ -1,11 +1,19 @@
 "use client";
 import axiosRequest from "@/lib/axiosRequest";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface User {
   id: string;
   username: string;
   email: string;
+  role: string;
+}
+
+interface AddUserBody {
+  username: string;
+  email: string;
+  password: string;
+  role: string;
 }
 
 export const useGetAllUser = () => {
@@ -16,8 +24,23 @@ export const useGetAllUser = () => {
         url: "/get-all-users",
         method: "GET",
       });
-      //    console.log("API Response:", response);
-      // return response;
     },
+  });
+};
+
+export const useAddUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation<User, Error, AddUserBody>({
+    mutationKey: ["addUser"],
+    mutationFn: async (body: AddUserBody) => {
+      return await axiosRequest<User>({
+        url: "/add-user",
+        method: "POST",
+        data: body,
+      });
+    },
+    onSuccess:()=>{
+      queryClient.invalidateQueries(["allUsers"]);
+    }
   });
 };
