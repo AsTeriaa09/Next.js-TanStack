@@ -1,14 +1,21 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
 
-axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
+axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL as string;
 
-const axiosRequest = async (options: AxiosRequestConfig) => {
-  try {
-    const response = await axios(options);
-    return response.data;
-  } catch (err: any) {
-    throw err?.response?.data || "An unexpected error occurred";
-  }
+const axiosRequest = async <T>(options: AxiosRequestConfig): Promise<T> => {
+  const onSuccess = (res: AxiosResponse<T>): T => {
+    return res.data;
+  };
+
+  const onError = (err: AxiosError): never => {
+    if (err.response) {
+      throw err.response.data;
+    }
+    throw new Error(err.message);
+  };
+
+  return axios(options).then(onSuccess).catch(onError);
 };
 
 export default axiosRequest;
+

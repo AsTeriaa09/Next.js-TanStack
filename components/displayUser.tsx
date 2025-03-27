@@ -11,7 +11,7 @@ const DisplayUsers = () => {
     <div>
       <h2>All Users</h2>
       <ul>
-        {users?.map((user: { id: string; username: string; email: string }) => (
+        {users?.map((user) => (
           <li key={user.id}>
             <strong>{user.username}</strong> - {user.email}
           </li>
