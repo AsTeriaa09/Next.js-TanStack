@@ -63,3 +63,20 @@ export const useDeleteUser = () => {
     },
   });
 };
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation<User, Error, { _id: string; username: string; email: string; role: string }>({
+    mutationKey: ["UpdateUser"],
+    mutationFn: async ({ _id, username, email, role }) => {
+      return await axiosRequest<User>({
+        url: `/update-user/${_id}`,
+        method: "PUT",
+        data: { username, email, role },
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["allUsers"]);
+    },
+  });
+};
